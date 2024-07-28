@@ -1,9 +1,14 @@
 import React from "react";
 import Avatar from "react-avatar";
 import { FaArrowLeftLong } from "react-icons/fa6";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import useGetProfile from "../hooks/useGetProfile";
 
 const Profile = () => {
+  const { profile, user } = useSelector((state) => state.user);
+  const { id } = useParams();
+  useGetProfile(id);
   return (
     <div className="w-[60%]  mx-auto border border-l border-r">
       <div className="w-full h-58">
@@ -12,11 +17,11 @@ const Profile = () => {
             <FaArrowLeftLong size="24px" />
           </Link>
           <div className="ml-2">
-            <h1 className="font-bold text-lg">Jins Joseph</h1>
+            <h1 className="font-bold text-lg">{profile?.username}</h1>
             <p className="text-gray-500 text-sm">10 posts</p>
           </div>
         </div>
-        <div className="w-full relative">
+        <div className="w-full relative pb-5">
           <div>
             <img
               src="https://png.pngtree.com/background/20230611/original/pngtree-girl-wears-long-hair-and-is-looking-outward-picture-image_3167922.jpg"
@@ -34,15 +39,24 @@ const Profile = () => {
             />
           </div>
         </div>
-        <div className="text-right m-4">
-            <button className="px-4 py-1 border rounded-full text-right border-gray-400 hover:bg-gray-400 font-bold text-black"    >Edit Profile</button>
-        </div>
-        <div className="m-4">
-            <h1 className="font-bold text-2xl">Jins Joseph</h1>
-            <p>@jinsjoseph</p>
+        {user._id === profile._id && (
+          <div className="text-right m-4">
+            <button className="px-4 py-1 border rounded-full text-right border-gray-400 hover:bg-gray-400 font-bold text-black">
+              Edit Profile
+            </button>
+          </div>
+        )}
+
+        <div className="my-10 ">
+          <h1 className="font-bold text-2xl">{profile?.username}</h1>
+          <p>@{profile?.name}</p>
         </div>
         <div className="m-4 text-sm">
-            <p>In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on</p>
+          <p>
+            In publishing and graphic design, Lorem ipsum is a placeholder text
+            commonly used to demonstrate the visual form of a document or a
+            typeface without relying on
+          </p>
         </div>
       </div>
     </div>

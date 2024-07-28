@@ -1,18 +1,21 @@
 import Tweet from "../models/tweetModel.js";
-import _ from 'lodash';
+import _ from "lodash";
 import User from "../models/userModel.js";
 export const createTweet = async (req, res) => {
   try {
-    const { description, id } = req.body;
+    const { desc, id } = req.body;
+    const description=desc
     if (!description || !id) {
       return res.status(401).json({
         message: "Fields are required",
         success: false,
       });
     }
+    const user=await User.findById((id)).select("-password")
     await Tweet.create({
       description,
       userId: id,
+      userDetails:user
     });
     return res.status(200).json({
       message: "Tweet Created successsfull",
@@ -91,6 +94,7 @@ export const likeOrDislike = async (req, res) => {
 export const getAllTweet = async (req, res) => {
   try {
     const id = req.params.id;
+    console.log(id);
     const loggedUser = await User.findById(id);
 
     // Find tweets of the logged-in user
@@ -105,7 +109,7 @@ export const getAllTweet = async (req, res) => {
 
     // Flatten the array of tweets
     const allFollowingTweets = followingUserTweets.flat();
-
+    console.log(loggedUserTweets.concat(allFollowingTweets));
     return res.status(200).json({
       tweets: loggedUserTweets.concat(allFollowingTweets),
     });
@@ -117,20 +121,22 @@ export const getAllTweet = async (req, res) => {
   }
 };
 
-export const getFollowingTweet=async(req,res)=>{
+export const getFollowingTweet = async (req, res) => {
   try {
-    const id=req.params.id;
-    const loggeduser=await User.findById(id);
-    const followingTweet=await Promise.all(loggeduser.following.map((id)=>{
-      return Tweet.find({userId:id})
-    }))
+    const id = req.params.id;
+    const loggeduser = await User.findById(id);
+    const followingTweet = await Promise.all(
+      loggeduser.following.map((id) => {
+        return Tweet.find({ userId: id });
+      })
+    );
     return res.status(200).json({
-      tweet:[].concat(...followingTweet)
-    })
+      tweet: [].concat(...followingTweet),
+    });
   } catch (error) {
     return res.status(500).json({
       message: `Error occurred due to ${error.message}`,
       success: false,
     });
   }
-}
+};

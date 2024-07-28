@@ -6,7 +6,7 @@ export const Register = async (req, res) => {
   //console.log(req.body)
   try {
     const { name, username, email, password } = req.body;
-  //  console.log(name,email,password)
+    //  console.log(name,email,password)
     if (!name || !username || !email || !password) {
       return res.status(201).json({
         message: "All fields are required",
@@ -74,6 +74,7 @@ export const Login = async (req, res) => {
       .json({
         message: `Welcome back ${user.name}`,
         success: true,
+        user,
       });
   } catch (error) {
     return res.status(500).json({
@@ -140,26 +141,31 @@ export const getMyProfile = async (req, res) => {
 
 export const getOtherUsers = async (req, res) => {
   try {
-    const { id } = req.body;
-    const otherUsers = await User.find({ _id: { $nt: id } }).select(
+    const { id } = req.params;
+
+    const otherUsers = await User.find({ _id: { $ne: id } }).select(
       "-password"
     );
-    if (!otherUsers) {
-      return res.status(402).json({
-        message: "Don't have any users",
-        succees: false,
+
+    if (!otherUsers || otherUsers.length === 0) {
+      return res.status(404).json({
+        message: "No other users found",
+        success: false,
       });
     }
+
     return res.status(200).json({
       otherUsers,
+      success: true,
     });
   } catch (error) {
     return res.status(500).json({
-      message: `Error occured due to ${error.message}`,
+      message: `Error occurred due to ${error.message}`,
       success: false,
     });
   }
 };
+
 export const follow = async (req, res) => {
   try {
     const loggedInuserId = req.body.id;
@@ -186,7 +192,7 @@ export const follow = async (req, res) => {
     });
   }
 };
-export const unfollow=async(req,res)=>{
+export const unfollow = async (req, res) => {
   try {
     const loggedInuserId = req.body.id;
     const userId = req.params.id;
@@ -211,4 +217,4 @@ export const unfollow=async(req,res)=>{
       success: false,
     });
   }
-}
+};

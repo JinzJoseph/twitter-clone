@@ -1,9 +1,12 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-
+import { getUser } from "../redux/UserSlice";
+import "react-toastify/dist/ReactToastify.css";
 const Login = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
@@ -19,10 +22,10 @@ const Login = () => {
           },
         }
       );
-      console.log(res);
-
+     // console.log(res);
+      dispatch(getUser(res?.data?.user));
       if (res.status === 200) {
-        toast.success(res.data.message)
+        toast.success(res.data.message);
         navigate("/home");
       }
     } catch (error) {

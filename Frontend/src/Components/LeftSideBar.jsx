@@ -6,7 +6,9 @@ import { FaBookmark } from "react-icons/fa";
 import { FaRegUser } from "react-icons/fa";
 import { IoIosLogOut } from "react-icons/io";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 const LeftSideBar = () => {
+  const {user}=useSelector((state)=>state.user)
   return (
     <div className="h-full w-[20%] ">
       <div className="my-3">
@@ -36,7 +38,7 @@ const LeftSideBar = () => {
             </div>
             <p className="font-semibold text-lg ml-2">Notification</p>
           </div>
-          <Link to="/profile" className="flex items-center hover:bg-gray-200 my-2 px-4 py-3 rounded-full cursor-pointer ">
+          <Link to={`/profile/${user._id}`} className="flex items-center hover:bg-gray-200 my-2 px-4 py-3 rounded-full cursor-pointer ">
             <div className="">
               <FaRegUser className="w-7 h-7" />{" "}
             </div>

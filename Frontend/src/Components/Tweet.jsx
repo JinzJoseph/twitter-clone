@@ -3,7 +3,8 @@ import Avatar from "react-avatar";
 import { FaRegComment } from "react-icons/fa";
 import { AiOutlineLike } from "react-icons/ai";
 import { CiBookmark } from "react-icons/ci";
-const Tweet = () => {
+const Tweet = ({tweet}) => {
+  console.log(tweet)
   return (
     <div className="ml-2 p-3 border-b border-gray-200">
       <div>
@@ -16,19 +17,19 @@ const Tweet = () => {
           />
           <div className="w-full ">
             <div className="flex gap-2 items-center ml-2">
-              <h1 className="font-bold">Jins Joseph</h1>
-              <p className="text-gray-500 text-sm">@jinsjoseph</p>
+              <h1 className="font-bold">{tweet?.userDetails[0]?.name}</h1>
+              <p className="text-gray-500 text-sm">@{tweet.userDetails[0]?.username}</p>
               <p className="text-gray-500 text-sm">1m</p>
             </div>
             <div>
-              <p>hallo developer let connect and growm together</p>
+              <p>{tweet.description}</p>
             </div>
             <div className="flex justify-between my-3 cursor-pointer ">
               <div className="flex items-center ">
                 <div className="p-2 hover:bg-green-200 rounded-full cursor-pointer">
                   <AiOutlineLike size="20px" />
                 </div>{" "}
-                <p className="ml-1">0</p>
+                <p className="ml-1">{tweet?.like?.length}</p>
               </div>
               <div className="flex items-center ">
                 <div className="p-2 hover:bg-green-200 rounded-full cursor-pointer">
