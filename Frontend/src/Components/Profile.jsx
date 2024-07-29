@@ -2,13 +2,50 @@ import React from "react";
 import Avatar from "react-avatar";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { Link, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useGetProfile from "../hooks/useGetProfile";
-
+import axios from "axios";
+import {toast} from "react-toastify"
+import { followingupdate } from "../redux/UserSlice";
+import { getRefresh } from "../redux/tweetSlice";
 const Profile = () => {
   const { profile, user } = useSelector((state) => state.user);
   const { id } = useParams();
   useGetProfile(id);
+  const dispatch=useDispatch()
+  const followAndUnfollowHandler=async()=>{
+    if(user?.following.includes(id)){
+      //unfollow
+      try {
+        const res=await axios.post(`/api/v1/user/unfollow/${id}`,{id:user?._id},{
+          headers:{
+            "content-type":"application/json"
+          }
+        })
+        console.log(res)
+        dispatch(followingupdate(id))
+        dispatch(getRefresh())
+        toast.success(res.data.message)
+      } catch (error) {
+        toast.error("something went wrong")
+      }
+    }else{
+      //follow
+      try {
+        const res=await axios.post(`/api/v1/user/follow/${id}`,{id:user?._id},{
+          headers:{
+            "content-type":"application/json"
+          }
+        })
+        console.log(res)
+        dispatch(followingupdate(id))
+        dispatch(getRefresh())
+        toast.success(res.data.message)
+      } catch (error) {
+        toast.error("something went wrong")
+      }
+    }
+  }
   return (
     <div className="w-[60%]  mx-auto border border-l border-r">
       <div className="w-full h-58">
@@ -39,10 +76,16 @@ const Profile = () => {
             />
           </div>
         </div>
-        {user._id === profile._id && (
+        {user?._id === profile?._id ? (
           <div className="text-right m-4">
             <button className="px-4 py-1 border rounded-full text-right border-gray-400 hover:bg-gray-400 font-bold text-black">
               Edit Profile
+            </button>
+          </div>
+        ) : (
+          <div className="text-right m-4">
+            <button  onClick={followAndUnfollowHandler}className="px-4 py-1 border rounded-full text-right border-gray-400 bg-black hover:bg-gray-400 font-bold text-white">
+              {user.following.includes(id) ? "Following" : "Follow"}
             </button>
           </div>
         )}

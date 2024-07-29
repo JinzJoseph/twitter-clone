@@ -8,7 +8,7 @@ router.get("/logout",isAuthenticated,logout);
 router.post("/bookmark/:id",isAuthenticated,bookmarks);
 router.get("/myprofile/:id",isAuthenticated,getMyProfile);
 router.get("/getotheruser/:id",isAuthenticated,getOtherUsers);
-router.post("/follow",isAuthenticated,follow);
-router.post("unfollow",isAuthenticated,unfollow);
+router.post("/follow/:id",isAuthenticated,follow);
+router.post("/unfollow/:id",isAuthenticated,unfollow);
 
 export default router;

@@ -44,9 +44,12 @@ export const deleteTweet = async (req, res) => {
   }
 };
 
+
+
 export const likeOrDislike = async (req, res) => {
   try {
     const loggedUserId = req.body.id;
+    console.log(loggedUserId);
     const tweetId = req.params.id;
     const tweet = await Tweet.findById(tweetId);
 
@@ -59,31 +62,25 @@ export const likeOrDislike = async (req, res) => {
 
     if (tweet.like.includes(loggedUserId)) {
       // Dislike
-
       await Tweet.findByIdAndUpdate(
-        { tweetId },
-        _.pull(tweet.like, loggedUserId)
+        tweetId,
+        { $pull: { like: loggedUserId } }
       );
       return res.status(200).json({
-        message: "user disliked tweet",
+        message: "User disliked tweet",
+        success: true,
       });
     } else {
       // Like
-      // tweet.like.push(loggedUserId);
-      await Tweet.findByIdAndUpdate({ tweetId }, tweet.like.push(loggedUserId));
+      await Tweet.findByIdAndUpdate(
+        tweetId,
+        { $push: { like: loggedUserId } }
+      );
       return res.status(200).json({
-        message: "user liked tweet",
+        message: "User liked tweet",
+        success: true,
       });
     }
-
-    // await tweet.save();
-
-    // return res.status(200).json({
-    //   message: tweet.like.includes(loggedUserId)
-    //     ? "Tweet liked"
-    //     : "Tweet disliked",
-    //   success: true,
-    // });
   } catch (error) {
     return res.status(500).json({
       message: `Error occurred due to ${error.message}`,
@@ -91,6 +88,7 @@ export const likeOrDislike = async (req, res) => {
     });
   }
 };
+
 export const getAllTweet = async (req, res) => {
   try {
     const id = req.params.id;

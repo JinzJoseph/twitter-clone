@@ -11,7 +11,7 @@ const Feed = () => {
       <div className="w-full ">
         <CreatePost />
         {tweet?.map((item, index) => (
-          <Tweet key={index} tweet={item} />
+          <Tweet key={index} items={item} />
         ))}
       </div>
     </div>

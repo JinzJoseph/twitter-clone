@@ -196,25 +196,42 @@ export const unfollow = async (req, res) => {
   try {
     const loggedInuserId = req.body.id;
     const userId = req.params.id;
+
+    // Fetch both the logged-in user and the user to unfollow
     const loggedInUser = await User.findById(loggedInuserId);
     const user = await User.findById(userId);
-    if (!loggedInUser.following.includes(userId)) {
-      await User.updateOne({ $pull: { followers: loggedInuserId } });
-      await loggedInUser.updateOne({ $pull: { following: userId } });
-    } else {
-      return res.status(400).json({
-        message: `user has follwed to ${user.name}`,
+
+    // Check if both users exist
+    if (!loggedInUser || !user) {
+      return res.status(404).json({
+        message: "User not found",
         success: false,
       });
     }
-    return res.status(200).json({
-      message: `${loggedInUser.name}  unfollow to ${user.name}`,
-      success: true,
-    });
+
+    // Check if the logged-in user is following the other user
+    if (loggedInUser.following.includes(userId)) {
+      // Remove userId from loggedInUser's following list
+      await loggedInUser.updateOne({ $pull: { following: userId } });
+
+      // Remove loggedInUserId from user's followers list
+      await user.updateOne({ $pull: { followers: loggedInuserId } });
+
+      return res.status(200).json({
+        message: `${loggedInUser.name} unfollowed ${user.name}`,
+        success: true,
+      });
+    } else {
+      return res.status(400).json({
+        message: `You are not following ${user.name}`,
+        success: false,
+      });
+    }
   } catch (error) {
     return res.status(500).json({
-      message: `Error occured due to ${error.message}`,
+      message: `Error occurred due to ${error.message}`,
       success: false,
     });
   }
 };
+

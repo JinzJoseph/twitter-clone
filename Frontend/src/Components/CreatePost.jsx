@@ -5,13 +5,14 @@ import { FaFileImage } from "react-icons/fa";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { getRefresh } from "../redux/tweetSlice";
+import { getAllTweet, getIsActive, getRefresh } from "../redux/tweetSlice";
 
 const CreatePost = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
   const id = user._id;
   const [desc, setDesc] = useState("");
+  const { isActive } = useSelector((state) => state.tweet);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,7 +27,7 @@ const CreatePost = () => {
         }
       );
       dispatch(getRefresh());
-      
+
       if (res.data.success) {
         toast.success(res.data.message);
         setDesc(""); // Clear the description after successful post
@@ -39,14 +40,28 @@ const CreatePost = () => {
     }
   };
 
+  const forYouHandler = () => {
+    dispatch(getIsActive(true));
+  };
+
+  const followingHandler = () => {
+    dispatch(getIsActive(false));
+  };
+
   return (
     <div className="w-full mx-auto">
       <div className="my-3 w-full">
         <div className="flex items-center justify-between border-b border-gray-300">
-          <div className="cursor-pointer hover:bg-gray-400 w-[30%] text-center p-4">
+          <div
+            onClick={forYouHandler}
+            className={`cursor-pointer hover:bg-gray-400 w-[30%] text-center p-4 ${isActive ? "border-b-4 border-blue-600" : ""}`}
+          >
             <h1 className="font-bold text-gray-700 text-lg">For You</h1>
           </div>
-          <div className="cursor-pointer hover:bg-gray-400 w-[30%] text-center p-4">
+          <div
+            onClick={followingHandler}
+            className={`cursor-pointer hover:bg-gray-400 w-[30%] text-center p-4 ${!isActive ? "border-b-4 border-blue-600" : ""}`}
+          >
             <h1 className="font-bold text-gray-700 text-lg">Following</h1>
           </div>
           <div className="cursor-pointer hover:bg-gray-400 ml-auto p-4">
