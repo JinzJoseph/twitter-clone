@@ -6,9 +6,31 @@ import { FaBookmark } from "react-icons/fa";
 import { FaRegUser } from "react-icons/fa";
 import { IoIosLogOut } from "react-icons/io";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import {toast} from "react-toastify";
+import axios from "axios"
+import { useNavigate } from "react-router-dom";
+import { getMyProfile, getOtherUser, getUser } from "../redux/UserSlice";
+import { getAllTweet } from "../redux/tweetSlice";
 const LeftSideBar = () => {
-  const {user}=useSelector((state)=>state.user)
+  const navigate=useNavigate()
+  const dispatch=useDispatch()
+  const {user}=useSelector((state)=>state.user);
+  const handleLogout=async()=>{
+    try {
+      const res=await axios.get("/api/v1/user/logout")
+      if(res.data.success){
+        toast.success(res.data.message);
+        dispatch(getUser(null))
+        dispatch(getOtherUser(null))
+        dispatch(getMyProfile(null))
+        dispatch(getAllTweet(null))
+        navigate("/login")
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
   return (
     <div className="h-full w-[20%] ">
       <div className="my-3">
@@ -50,7 +72,7 @@ const LeftSideBar = () => {
             </div>
             <p className="font-semibold text-lg ml-2">BookMarks</p>
           </div>
-          <div className="flex items-center hover:bg-gray-200 my-2 px-4 py-3 rounded-full cursor-pointer ">
+          <div onClick={handleLogout} className="flex items-center hover:bg-gray-200 my-2 px-4 py-3 rounded-full cursor-pointer ">
             <div className="">
               <IoIosLogOut className="w-7 h-7" />{" "}
             </div>
